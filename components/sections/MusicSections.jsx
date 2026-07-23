@@ -92,11 +92,76 @@ export function Tracklist() {
         </div>
 
         <Reveal delay={0.2}>
-          <div className={`mono ${styles.embedNote}`}>{t.music.embedNote}</div>
+          <div className={`mono ${styles.embedNote}`}>{t.music.soundcloudLabel}</div>
+          <div className={styles.soundcloud}>
+            <iframe
+              title="SoundCloud — Sasha Sutton"
+              width="100%"
+              height="360"
+              // Only loads when scrolled near, so it costs nothing up front.
+              loading="lazy"
+              scrolling="no"
+              frameBorder="no"
+              allow="autoplay"
+              src={soundcloudSrc(shared.media.soundcloud)}
+            />
+          </div>
         </Reveal>
       </div>
     </section>
   );
+}
+
+/* ---------------------------------------------------------------- video -- */
+
+export function Video() {
+  const { t } = useLang();
+  const { youtubeId, youtubeStart } = shared.media;
+  // youtube-nocookie so an unopened embed sets no tracking cookies. start= keeps
+  // the ?t=10s from the share link; rel=0 keeps "related" to this channel only.
+  const src = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${youtubeStart}&rel=0`;
+
+  return (
+    <section id="video" data-section className="section">
+      <div className={sections.block}>
+        <SectionHead title={t.music.video.title} />
+        <Reveal>
+          <div className={styles.video}>
+            <iframe
+              title={t.music.video.title}
+              src={src}
+              loading="lazy"
+              allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </Reveal>
+        <Reveal delay={0.08}>
+          <p className={`mono ${styles.videoCaption}`}>{t.music.video.caption}</p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Wraps a SoundCloud track/playlist URL in the widget player. Amber to match
+ * the page's accent; visual=false is the compact bar rather than the big
+ * artwork block, which sits better under the tracklist.
+ */
+function soundcloudSrc(url) {
+  const params = new URLSearchParams({
+    url,
+    color: "#ff8800",
+    auto_play: "false",
+    hide_related: "true",
+    show_comments: "false",
+    show_user: "true",
+    show_reposts: "false",
+    show_teaser: "false",
+    visual: "false",
+  });
+  return `https://w.soundcloud.com/player/?${params.toString()}`;
 }
 
 /* -------------------------------------------------------------- credits -- */

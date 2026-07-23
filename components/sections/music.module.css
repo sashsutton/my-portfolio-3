@@ -143,6 +143,43 @@
 
 .embedNote {
   margin-top: 22px;
+  margin-bottom: 12px;
+  color: var(--t4);
+}
+
+/* SoundCloud widget. The border + radius wrap it so the third-party player
+   reads as part of the page rather than pasted onto it. */
+.soundcloud {
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(10, 11, 14, 0.6);
+}
+.soundcloud iframe {
+  display: block;
+}
+
+/* ----------------------------------------------------------------- video */
+/* Fixed 16:9 box so the layout reserves the right height before the iframe
+   loads — no jump when the lazy embed arrives. */
+.video {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  width: 100%;
+  border: 1px solid var(--line-2);
+  border-radius: 4px;
+  overflow: hidden;
+  background: #000;
+}
+.video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.videoCaption {
+  margin-top: 16px;
   color: var(--t4);
 }
 
