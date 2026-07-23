@@ -8,9 +8,8 @@ import {
   Credits,
   MusicHero,
   MusicOutro,
-  Tracklist,
+  Sets,
   Transport,
-  Video,
 } from "@/components/sections/MusicSections";
 
 const VinylCanvas = dynamic(() => import("@/components/three/VinylCanvas"), {
@@ -30,8 +29,7 @@ export default function MusicPage() {
 
       <main>
         <MusicHero />
-        <Tracklist />
-        <Video />
+        <Sets />
         <Credits />
         <MusicOutro />
       </main>

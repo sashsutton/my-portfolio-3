@@ -19,17 +19,6 @@ function SectionHead({ title }) {
   );
 }
 
-function Bars({ playing }) {
-  return (
-    <span className={`${styles.bars} ${playing ? "" : styles.barsPaused}`} aria-hidden>
-      <i className={styles.bar} />
-      <i className={styles.bar} />
-      <i className={styles.bar} />
-      <i className={styles.bar} />
-    </span>
-  );
-}
-
 /* ----------------------------------------------------------------- hero -- */
 
 export function MusicHero() {
@@ -48,96 +37,73 @@ export function MusicHero() {
   );
 }
 
-/* ------------------------------------------------------------ tracklist -- */
+/* ------------------------------------------------------------------ sets -- */
 
-export function Tracklist() {
+/**
+ * One section, three sets — each embedded from where it actually lives:
+ * a DJ set from SoundCloud, a self-hosted live set (placeholder until the file
+ * exists), and the live-set video from YouTube.
+ *
+ * Every embed is lazy: nothing loads until it is scrolled near, so a visitor
+ * who never reaches this section pays no bandwidth for any of the three.
+ */
+export function Sets() {
   const { t } = useLang();
-  const playing = useAppStore((s) => s.playing);
-  const trackIndex = useAppStore((s) => s.trackIndex);
-  const setTrackIndex = useAppStore((s) => s.setTrackIndex);
-  const setPlaying = useAppStore((s) => s.setPlaying);
+  const { sets } = t.music;
+  const { soundcloud, youtubeId, youtubeStart, liveSet } = shared.media;
+
+  // youtube-nocookie so an unopened embed sets no tracking cookies. start= keeps
+  // the ?t=10s from the share link; rel=0 keeps "related" to this channel only.
+  const youtube = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${youtubeStart}&rel=0`;
 
   return (
-    <section id="tracks" data-section className="section">
+    <section id="sets" data-section className="section">
       <div className={sections.block}>
-        <SectionHead title={t.music.side.title} />
+        <SectionHead title={sets.title} />
 
-        <div className={styles.tracks}>
-          {shared.tracks.map((track, i) => {
-            const active = i === trackIndex;
-            return (
-              <Reveal key={track.id} delay={i * 0.06}>
-                <button
-                  className={`${styles.track} ${active ? styles.trackActive : ""}`}
-                  aria-pressed={active}
-                  onClick={() => {
-                    // Selecting a track cues the tonearm to its band and drops
-                    // the needle — picking a track you can't hear start would
-                    // be a dead end.
-                    setTrackIndex(i);
-                    setPlaying(true);
-                  }}
-                >
-                  <span className={`mono ${styles.trackNo}`}>{track.no}</span>
-                  <span className={styles.trackTitle}>
-                    {track.title}
-                    {active && <Bars playing={playing} />}
-                  </span>
-                  <span className={`mono ${styles.trackMeta}`}>{t.music.trackMeta[track.id]}</span>
-                  <span className={`mono ${styles.trackLen}`}>{track.len}</span>
-                </button>
-              </Reveal>
-            );
-          })}
-        </div>
-
-        <Reveal delay={0.2}>
-          <div className={`mono ${styles.embedNote}`}>{t.music.soundcloudLabel}</div>
+        {/* DJ set — SoundCloud */}
+        <Reveal className={styles.set}>
+          <div className={`mono ${styles.setLabel}`}>{sets.dj}</div>
           <div className={styles.soundcloud}>
             <iframe
               title="SoundCloud — Sasha Sutton"
               width="100%"
               height="360"
-              // Only loads when scrolled near, so it costs nothing up front.
               loading="lazy"
               scrolling="no"
               frameBorder="no"
               allow="autoplay"
-              src={soundcloudSrc(shared.media.soundcloud)}
+              src={soundcloudSrc(soundcloud)}
             />
           </div>
         </Reveal>
-      </div>
-    </section>
-  );
-}
 
-/* ---------------------------------------------------------------- video -- */
+        {/* Live set — self-hosted. The frame is drawn either way, so dropping a
+            file in later cannot reflow the section. */}
+        <Reveal delay={0.06} className={styles.set}>
+          <div className={`mono ${styles.setLabel}`}>{sets.live}</div>
+          {liveSet ? (
+            <audio className={styles.audio} controls preload="none" src={liveSet} />
+          ) : (
+            <div className={styles.audioEmpty} aria-hidden>
+              <span className="mono">{sets.livePlaceholder}</span>
+              <span className={`mono ${styles.audioPath}`}>public/audio/live-set.mp3</span>
+            </div>
+          )}
+        </Reveal>
 
-export function Video() {
-  const { t } = useLang();
-  const { youtubeId, youtubeStart } = shared.media;
-  // youtube-nocookie so an unopened embed sets no tracking cookies. start= keeps
-  // the ?t=10s from the share link; rel=0 keeps "related" to this channel only.
-  const src = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${youtubeStart}&rel=0`;
-
-  return (
-    <section id="video" data-section className="section">
-      <div className={sections.block}>
-        <SectionHead title={t.music.video.title} />
-        <Reveal>
+        {/* Live set — video, YouTube */}
+        <Reveal delay={0.12} className={styles.set}>
+          <div className={`mono ${styles.setLabel}`}>{sets.video}</div>
           <div className={styles.video}>
             <iframe
-              title={t.music.video.title}
-              src={src}
+              title={sets.video}
+              src={youtube}
               loading="lazy"
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
           </div>
-        </Reveal>
-        <Reveal delay={0.08}>
-          <p className={`mono ${styles.videoCaption}`}>{t.music.video.caption}</p>
         </Reveal>
       </div>
     </section>
@@ -147,7 +113,7 @@ export function Video() {
 /**
  * Wraps a SoundCloud track/playlist URL in the widget player. Amber to match
  * the page's accent; visual=false is the compact bar rather than the big
- * artwork block, which sits better under the tracklist.
+ * artwork block.
  */
 function soundcloudSrc(url) {
   const params = new URLSearchParams({
@@ -225,17 +191,14 @@ export function Transport() {
   const { t } = useLang();
   const playing = useAppStore((s) => s.playing);
   const toggle = useAppStore((s) => s.togglePlaying);
-  const trackIndex = useAppStore((s) => s.trackIndex);
-  const track = shared.tracks[trackIndex];
 
+  // No track list any more, so this drives nothing but the platter — it toggles
+  // the deck's constant spin. The embeds above carry the actual audio.
   return (
     <div className={styles.transport}>
       <div className={styles.transportMeta}>
-        <span className={`mono ${styles.transportLabel}`}>
-          {playing ? t.music.nowPlaying : t.music.cued}
-        </span>
         <span className={`mono ${styles.transportTitle}`}>
-          {track.no} · {track.title}
+          {playing ? t.music.spinning : t.music.spin}
         </span>
       </div>
 
