@@ -1,0 +1,271 @@
+/* The DOM that lives inside the CRT. Authored at a fixed pixel size (640x480
+   "VGA", or 380x285 on narrow viewports — see ScreenUI) and scaled into world
+   space by drei's <Html transform>. Sizes here are authoring pixels, so they
+   are fixed; the `.compact` block is the one responsive step. */
+
+.screen {
+  position: relative;
+  padding: 18px 22px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+  user-select: none;
+
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--green);
+  text-shadow: 0 0 2px rgba(124, 255, 178, 0.85), 0 0 14px rgba(124, 255, 178, 0.45);
+
+  /* Deliberately semi-transparent: the shader plane behind supplies the
+     scanlines, flicker and roll bar, and they need to read through the DOM. */
+  background: radial-gradient(120% 100% at 50% 40%, rgba(12, 34, 23, 0.42), rgba(3, 9, 6, 0.72));
+  /* The tube face is convex; a matching CSS radius keeps the DOM inside it. */
+  border-radius: 26px;
+}
+
+/* Phosphor bleed + scanlines on the DOM itself, so text and glow agree. */
+.screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 26px;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0px,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.3) 4px
+  );
+  mix-blend-mode: multiply;
+}
+
+.dim {
+  opacity: 0.55;
+}
+
+/* The four blocks must never be allowed to compress. The screen is a
+   fixed-height flex column, so a default flex-shrink lets a block get squeezed
+   shorter than its own text — the box shrinks, the type does not, and the
+   result is lines sitting on top of the block below. Pinning shrink to 0 makes
+   that impossible; if anything ever does overflow it clips at the bezel
+   (overflow: hidden above) instead of overlapping. */
+.status,
+.boot,
+.menu,
+.foot {
+  flex: none;
+}
+
+/* ---------------------------------------------------------------- status bar */
+.status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(124, 255, 178, 0.28);
+}
+.led {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber);
+  animation: pulse 2.4s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* ------------------------------------------------------------------ boot log */
+/* The "whoami" block: power-on line, then who you are, above the programs.
+
+   Fixed height, not min-height. The text types in line by line, and a block
+   that grows as it fills pushes the program menu down underneath it — mid-fade,
+   which reads as the two sliding through each other. Reserving all eight lines
+   up front means nothing below ever moves.
+
+   8 lines x (14px x 1.5) = 168px. Kept in step with `intro` in lib/content.js. */
+.boot {
+  white-space: pre;
+  height: 168px;
+  font-size: 14px;
+}
+/* A block with no content is zero-high, so the deliberate blank line in the
+   boot array collapsed and the prompt sat flush against "LOADING PERSONALITY".
+   One line-height minimum gives empty lines their row back. */
+.bootLine {
+  display: block;
+  min-height: 1.5em;
+}
+.caret {
+  display: inline-block;
+  width: 9px;
+  height: 15px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--green);
+  box-shadow: 0 0 10px rgba(124, 255, 178, 0.8);
+  animation: blink 1.05s steps(1) infinite;
+}
+@keyframes blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+/* ------------------------------------------------------------------ programs */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s var(--ease), transform 0.5s var(--ease);
+}
+.menuVisible {
+  opacity: 1;
+  transform: none;
+}
+.menuLabel {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  opacity: 0.6;
+  margin-bottom: 4px;
+}
+
+.item {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  width: 100%;
+  padding: 5px 10px;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: inherit;
+  transition: background 0.14s linear, color 0.14s linear, border-color 0.14s linear;
+}
+.item:hover,
+.item:focus-visible {
+  /* Classic DOS inverted selection. */
+  background: var(--green);
+  color: #04140b;
+  text-shadow: none;
+  outline: none;
+}
+.item:hover .arrow,
+.item:focus-visible .arrow {
+  opacity: 1;
+}
+.itemAmber:hover,
+.itemAmber:focus-visible {
+  background: var(--amber);
+  color: #170d02;
+}
+.arrow {
+  opacity: 0;
+  transition: opacity 0.14s linear;
+}
+.file {
+  min-width: 128px;
+  font-weight: 500;
+}
+.name {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.blurb {
+  min-height: 46px;
+  margin-top: 6px;
+  padding-left: 10px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  opacity: 0.72;
+  border-left: 1px solid rgba(124, 255, 178, 0.3);
+}
+
+/* ---------------------------------------------------------------------- foot */
+/* Larger than the status bar on purpose. The scroll hint is the only prompt
+   telling a first-time visitor that the page continues past the machine, so it
+   is the one line here that has to be read rather than noticed. */
+.foot {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  padding-top: 8px;
+  border-top: 1px solid rgba(124, 255, 178, 0.28);
+}
+.scrollHint {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chevron {
+  animation: nudge 1.8s var(--ease) infinite;
+}
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(3px); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caret, .led, .chevron { animation: none; }
+}
+
+/* --------------------------------------------------------------- compact ---
+   Narrow viewports author the terminal at 380x285 instead of 640x480. Type
+   sizes stay roughly the same in authoring pixels — which is the point: the
+   box shrinks around them, so they end up near 1:1 with device pixels. */
+.compact {
+  padding: 11px 13px 9px;
+  gap: 7px;
+  font-size: 13px;
+  line-height: 1.4;
+  border-radius: 15px;
+}
+.compact::after {
+  border-radius: 15px;
+}
+.compact .status,
+.compact .foot {
+  letter-spacing: 0.06em;
+}
+.compact .status {
+  font-size: 10px;
+}
+/* Keeps the same one-step-up relationship it has at full size. */
+.compact .foot {
+  font-size: 12px;
+}
+.compact .boot {
+  /* introCompact is six lines at 12px x 1.4. */
+  height: 101px;
+  font-size: 12px;
+}
+.compact .caret {
+  width: 7px;
+  height: 12px;
+}
+.compact .menuLabel {
+  font-size: 10px;
+}
+.compact .item {
+  padding: 3px 7px;
+  gap: 8px;
+}
+.compact .file {
+  min-width: 0;
+  font-size: 12px;
+}
+.compact .blurb {
+  display: none;
+}

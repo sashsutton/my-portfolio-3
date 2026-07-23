@@ -1,0 +1,313 @@
+/* Sections scroll over the fixed WebGL layer. Each one carries its own dark
+   scrim so text stays readable no matter what the camera is looking at. */
+
+.hero {
+  position: relative;
+  /* Must beat SceneCanvas's z-index:1 or the footer hides behind the canvas.
+     .section does this via its own rule; the hero has no .section class. */
+  z-index: 10;
+  height: 100svh;
+  min-height: 620px;
+  pointer-events: none;
+}
+/* Grounds the footer type against whatever the scene happens to put behind it
+   (usually the brightly-lit keyboard). z-index:-1 keeps it behind .heroFoot but
+   still inside .hero's stacking context, so it stays above the canvas. */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 230px;
+  z-index: -1;
+  background: linear-gradient(to top, rgba(7, 8, 10, 0.94), rgba(7, 8, 10, 0));
+  pointer-events: none;
+}
+
+.heroFoot {
+  position: absolute;
+  left: var(--gutter);
+  right: var(--gutter);
+  bottom: 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  color: var(--t4);
+  pointer-events: none;
+}
+.heroTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(28px, 4vw, 52px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: 0 0 6px;
+}
+.heroTag {
+  font-style: italic;
+  color: var(--t3);
+}
+@media (max-width: 640px) {
+  .heroFoot {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
+
+.block {
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+}
+/* Local top-up behind the text column. The heavy lifting is done by <Scrim>,
+   which fades the whole 3D layer back once the hero is gone; this just adds a
+   little extra contrast right under the copy. */
+.block::before {
+  content: "";
+  position: absolute;
+  inset: -12vh -8vw;
+  z-index: -1;
+  background: radial-gradient(65% 60% at 35% 50%, rgba(7, 8, 10, 0.75), rgba(7, 8, 10, 0) 78%);
+  pointer-events: none;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(28px, 5vw, 72px);
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .grid2 { grid-template-columns: 1fr; }
+}
+
+/* ----------------------------------------------------------------- portrait */
+/* aspect-ratio rather than a fixed height: the frame reserves its space before
+   the photo loads, so the copy underneath never jumps. Sized well under the
+   column width — a portrait reads better beside text than filling the column. */
+.portrait {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  aspect-ratio: 4 / 5;
+  margin: 0 0 34px;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.portraitImg {
+  object-fit: cover;
+  /* Pulled slightly toward the site's palette so a full-colour photograph does
+     not fight the phosphor green everywhere around it. */
+  filter: grayscale(0.4) contrast(1.05);
+}
+/* Empty state: hatched, labelled with the path to drop the file at. Reads as a
+   deliberate slot rather than a broken image. */
+.portraitEmpty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--t4);
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent 0 9px,
+    rgba(236, 233, 226, 0.035) 9px 10px
+  );
+}
+.portraitPath {
+  font-size: 9px;
+  color: var(--green-dim);
+  opacity: 0.75;
+}
+@media (max-width: 860px) {
+  /* Column is full width here, so cap it harder or the face dominates. */
+  .portrait { max-width: 240px; }
+}
+
+.quote {
+  margin: 34px 0 0;
+  padding-left: 18px;
+  border-left: 2px solid var(--green-dim);
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.4;
+  color: var(--text);
+  max-width: 34ch;
+}
+
+/* ------------------------------------------------------------------ lenses */
+/* Dividers are drawn as borders on the cells rather than as a 1px grid gap over
+   a coloured container. The gap trick shows the container colour through any
+   cell that hasn't finished its reveal animation, which reads as a grey
+   loading placeholder for the first second of the section. */
+/* auto-fit rather than a fixed column count, so adding or removing a lens is a
+   content change only. */
+.lenses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  border: 1px solid var(--line);
+}
+.lenses > *:not(:last-child) {
+  border-right: 1px solid var(--line);
+}
+@media (max-width: 860px) {
+  .lenses { grid-template-columns: 1fr; }
+  .lenses > *:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+}
+.lens {
+  display: block;
+  height: 100%;
+  padding: 30px 26px 34px;
+  scroll-margin-top: 120px;
+  transition: background 0.4s var(--ease);
+}
+.lens:hover {
+  background: #0c0f0d;
+}
+.lensTag {
+  color: var(--t4);
+}
+.lensTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.1;
+  margin: 16px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.lensArrow {
+  color: var(--green);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+}
+.lens:hover .lensArrow {
+  opacity: 1;
+  transform: none;
+}
+.lensBody {
+  color: var(--t2);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0;
+}
+.lensRule {
+  height: 2px;
+  width: 46px;
+  margin-top: 22px;
+  background: var(--green-dim);
+}
+.lensRuleAmber {
+  background: var(--amber-dim);
+}
+
+/* -------------------------------------------------------------------- next */
+.numbered {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+.numberedItem {
+  display: grid;
+  grid-template-columns: 72px minmax(0, 1fr);
+  gap: 20px;
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+.numberedIndex {
+  color: var(--green-dim);
+  text-shadow: var(--glow-green);
+  padding-top: 5px;
+}
+@media (max-width: 640px) {
+  .numberedItem { grid-template-columns: 1fr; gap: 8px; }
+}
+
+/* ----------------------------------------------------------------- contact */
+.contact {
+  min-height: 72svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+/* The closing line above the contact buttons.
+   The measure has to clear the longest translation, not just the English: at
+   the old 18ch, "where sound meets code." (23 chars) dropped its last word onto
+   a line of its own, and the French "là où le son rencontre le code." is 31.
+   34ch keeps both on one line at every size the clamp actually reaches; on a
+   genuinely narrow phone it wraps, which is the right thing to do there. */
+.contactLine {
+  font-size: clamp(24px, 3.4vw, 44px);
+  line-height: 1.3;
+  max-width: 34ch;
+  margin: 0;
+}
+
+.ctaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 40px;
+}
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t2);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease), background 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.cta:hover {
+  color: var(--green);
+  border-color: var(--green-dim);
+  background: rgba(124, 255, 178, 0.07);
+  transform: translateY(-2px);
+}
+.ctaPrimary {
+  color: var(--bg);
+  background: var(--green);
+  border-color: var(--green);
+}
+.ctaPrimary:hover {
+  color: var(--bg);
+  background: #9dffc7;
+  border-color: #9dffc7;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 90px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--t4);
+}
+
+/* ------------------------------------------------------------- reveal anim */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+}

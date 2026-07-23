@@ -1,0 +1,337 @@
+/* /science — the DOM half. Same scrim/section system as the other two pages;
+   the project grid and the education timeline are the new components. */
+
+.hero {
+  position: relative;
+  z-index: 10;
+  height: 100svh;
+  min-height: 620px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 var(--gutter) 64px;
+  pointer-events: none;
+}
+/* The hero is the one place with no scrim at all (it is 0 until you scroll), so
+   this gradient is the only thing separating the title from the cloud. Tall
+   enough to clear the whole text block, which at the top of the clamp is a
+   130px title plus the lead and the hint row. */
+.hero::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 400px;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    rgba(6, 7, 10, 0.97) 0%,
+    rgba(6, 7, 10, 0.85) 45%,
+    rgba(6, 7, 10, 0) 100%
+  );
+  pointer-events: none;
+}
+.heroTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(44px, 9vw, 130px);
+  line-height: 0.92;
+  letter-spacing: -0.025em;
+  margin: 10px 0 0;
+}
+.heroLead {
+  font-family: var(--font-serif), Georgia, serif;
+  font-style: italic;
+  font-size: clamp(17px, 2vw, 24px);
+  color: var(--t2);
+  max-width: 30ch;
+  margin: 14px 0 0;
+}
+.heroRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-top: 26px;
+  color: var(--t4);
+}
+@media (max-width: 640px) {
+  .heroRow { flex-direction: column; align-items: flex-start; gap: 8px; }
+}
+
+/* -------------------------------------------------------------- legibility */
+/*
+ * Every text block on this page carries its own backdrop, instead of the page
+ * relying on <Scrim> to knock the whole scene back.
+ *
+ * The cloud is additive green and it moves. Flat opacity alone does not fix
+ * that: dim points still drift behind the words and the eye keeps chasing them,
+ * which is what reads as glare. So the fix is local and it is a blur, not just
+ * a dim. Directly behind the copy the scene is blurred into a soft wash;
+ * everywhere else on screen it stays sharp and bright, which is the whole
+ * reason to keep the animation.
+ *
+ * Replaces `.block` from sections.module.css on this page. Do not apply both:
+ * they each define ::before and only one would survive.
+ */
+.block {
+  position: relative;
+  z-index: 10;
+  isolation: isolate;
+}
+.block::before {
+  content: "";
+  position: absolute;
+  inset: -8vh -6vw;
+  z-index: -1;
+  pointer-events: none;
+  background: rgba(6, 7, 10, 0.66);
+  backdrop-filter: blur(22px) saturate(0.8);
+  -webkit-backdrop-filter: blur(22px) saturate(0.8);
+  /* Feathered, or it reads as a rectangle pasted over the scene. */
+  -webkit-mask-image: radial-gradient(82% 78% at 42% 50%, #000 45%, transparent 100%);
+  mask-image: radial-gradient(82% 78% at 42% 50%, #000 45%, transparent 100%);
+}
+@media (prefers-reduced-transparency: reduce) {
+  /* Blur is the expensive half. Drop it and lean on opacity alone. */
+  .block::before {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: rgba(6, 7, 10, 0.85);
+  }
+}
+
+/* ------------------------------------------------------------ projects -- */
+.projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  border: 1px solid var(--line);
+}
+/* Dividers as cell borders rather than grid gaps — the gap trick shows the
+   container through any cell that has not finished its reveal yet. */
+.project {
+  display: flex;
+  flex-direction: column;
+  padding: 28px 26px 30px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.4s var(--ease);
+}
+.project:hover {
+  background: #0a0d0b;
+}
+.projectHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.projectNo {
+  color: var(--green-dim);
+  text-shadow: var(--glow-green);
+}
+.projectYear {
+  color: var(--t4);
+}
+.projectTitle {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  margin: 18px 0 12px;
+}
+.projectBlurb {
+  color: var(--t2);
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 0 0 22px;
+  /* Pushes the stack and links to the bottom so cards of different text
+     lengths still line their footers up across a row. */
+  flex: 1;
+}
+.stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.stackItem {
+  padding: 4px 9px;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 9px;
+  color: var(--t3);
+}
+.projectLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 20px;
+}
+.projectLink {
+  color: var(--t3);
+  transition: color 0.25s var(--ease);
+}
+.projectLink:hover {
+  color: var(--green);
+}
+
+/* ----------------------------------------------------------- education -- */
+.timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.timelineItem {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 28px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 720px) {
+  .timelineItem { grid-template-columns: 1fr; gap: 10px; }
+}
+/* Years over location, so the left column reads as one "when + where" unit
+   rather than two unrelated labels. */
+.when {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-top: 7px;
+}
+.years {
+  color: var(--green-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.yearsDash {
+  color: var(--t4);
+  margin: 0 6px;
+}
+.eduLocation {
+  color: var(--t4);
+}
+@media (max-width: 720px) {
+  /* Stacked layout: the column is now full width, so the pair reads better
+     side by side than as two short lines. */
+  .when {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 14px;
+    padding-top: 0;
+  }
+}
+.eduPlace {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.15;
+  margin: 0 0 8px;
+}
+.eduProgramme {
+  color: var(--t2);
+  margin: 0 0 10px;
+}
+/* Plain text, not the mono/uppercase treatment the short version used. These
+   are now full sentences and a coursework list; uppercase mono at 11px with
+   0.14em tracking is unreadable past about six words. */
+.eduDetail {
+  color: var(--t3);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 64ch;
+  margin: 0 0 10px;
+}
+.eduCourse {
+  color: var(--t4);
+  font-size: 13px;
+  line-height: 1.7;
+  max-width: 70ch;
+  margin: 0;
+}
+.eduCourseLabel {
+  color: var(--green-dim);
+  margin-right: 9px;
+}
+
+/* The university name doubles as the link to its programme page. */
+.eduLink {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  transition: color 0.25s var(--ease);
+}
+.eduLink:hover {
+  color: var(--green);
+}
+.eduLinkMark {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 13px;
+  color: var(--t4);
+  transition: color 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.eduLink:hover .eduLinkMark {
+  color: var(--green);
+  transform: translate(2px, -2px);
+}
+
+/* --------------------------------------------------------------- focus -- */
+.focusTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(19px, 2vw, 25px);
+  line-height: 1.2;
+  margin: 0 0 10px;
+}
+
+/* --------------------------------------------------------------- outro -- */
+.outro {
+  min-height: 74svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.outroBody {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(19px, 2.4vw, 30px);
+  line-height: 1.4;
+  color: var(--t2);
+  max-width: 32ch;
+  margin: 0;
+}
+.backCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  align-self: flex-start;
+  margin-top: 38px;
+  padding: 13px 22px;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--t2);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
+    background 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.backCta:hover {
+  color: var(--green);
+  border-color: var(--green-dim);
+  background: rgba(124, 255, 178, 0.07);
+  transform: translateY(-2px);
+}
+
+.footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 80px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--t4);
+}
