@@ -226,8 +226,8 @@
    sizes stay roughly the same in authoring pixels — which is the point: the
    box shrinks around them, so they end up near 1:1 with device pixels. */
 .compact {
-  padding: 11px 13px 9px;
-  gap: 7px;
+  padding: 10px 13px 8px;
+  gap: 6px;
   font-size: 13px;
   line-height: 1.4;
   border-radius: 15px;
@@ -247,8 +247,8 @@
   font-size: 12px;
 }
 .compact .boot {
-  /* introCompact is six lines at 12px x 1.4. */
-  height: 101px;
+  /* introCompact is five lines; .bootLine min-height is 1.5em, so 5 x 18px. */
+  height: 90px;
   font-size: 12px;
 }
 .compact .caret {
