@@ -14,6 +14,14 @@
 .DS_Store
 *.pem
 
+# audio: never commit sets to git — they are large and usually contain other
+# artists' work. Host on SoundCloud/Mixcloud and embed. A short track of your
+# OWN is fine to self-host: `git add -f public/audio/that-track.mp3`.
+public/audio/*.mp3
+public/audio/*.wav
+public/audio/*.flac
+public/audio/*.m4a
+
 # debug logs
 npm-debug.log*
 yarn-debug.log*

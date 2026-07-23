@@ -70,6 +70,20 @@
   margin-bottom: 12px;
   color: var(--amber-dim);
 }
+/* Radio set carries a station name beside its label. */
+.setHead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.setHead .setLabel {
+  margin-bottom: 0;
+}
+.setStation {
+  color: var(--t4);
+}
 
 /* SoundCloud widget. The border + radius wrap it so the third-party player
    reads as part of the page rather than pasted onto it. */
