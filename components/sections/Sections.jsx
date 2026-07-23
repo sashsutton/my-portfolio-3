@@ -181,16 +181,24 @@ export function Contact() {
 
         <Reveal delay={0.08}>
           <div className={styles.ctaRow}>
-            <a className={`${styles.cta} ${styles.ctaPrimary}`} href={links.cv} download>
+            {/* Opens the PDF in its own tab rather than forcing a download:
+                most people want to read a CV before deciding to keep it, and
+                the browser's viewer still offers a save button. */}
+            <a
+              className={`${styles.cta} ${styles.ctaPrimary}`}
+              href={links.cv}
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               {t.contact.cta.cv} ↓
             </a>
             <a className={styles.cta} href={`mailto:${email}`}>
               {t.contact.cta.email} ↗
             </a>
-            <a className={styles.cta} href={links.linkedin} target="_blank" rel="noreferrer">
+            <a className={styles.cta} href={links.linkedin} target="_blank" rel="noreferrer noopener">
               {t.contact.cta.linkedin} ↗
             </a>
-            <a className={styles.cta} href={links.github} target="_blank" rel="noreferrer">
+            <a className={styles.cta} href={links.github} target="_blank" rel="noreferrer noopener">
               {t.contact.cta.github} ↗
             </a>
           </div>

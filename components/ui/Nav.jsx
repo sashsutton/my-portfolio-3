@@ -92,7 +92,12 @@ export default function Nav({ variant = "home" }) {
             ))}
           </div>
 
-          <a className={styles.cvBtn} href={shared.links.cv} download>
+          <a
+            className={styles.cvBtn}
+            href={shared.links.cv}
+            target="_blank"
+            rel="noreferrer noopener"
+          >
             {t.nav.cv} ↓
           </a>
         </div>

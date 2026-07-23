@@ -7,6 +7,13 @@ import Reveal from "./Reveal";
 import styles from "./science.module.css";
 import sections from "./sections.module.css";
 
+/**
+ * Anything absolute leaves the site, so it opens in its own tab and never
+ * goes through next/link — Link would try to navigate the current page to it,
+ * which loses the visitor's place on this one.
+ */
+const isExternal = (href) => /^https?:\/\//.test(href);
+
 /* --------------------------------------------------------------- shared -- */
 
 function SectionHead({ title }) {
@@ -76,16 +83,26 @@ export function Projects() {
                         className={`mono ${styles.projectLink}`}
                         href={project.repo}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noreferrer noopener"
                       >
                         {projects.repo} ↗
                       </a>
                     )}
-                    {project.demo && (
-                      <Link className={`mono ${styles.projectLink}`} href={project.demo}>
-                        {projects.demo} →
-                      </Link>
-                    )}
+                    {project.demo &&
+                      (isExternal(project.demo) ? (
+                        <a
+                          className={`mono ${styles.projectLink}`}
+                          href={project.demo}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                        >
+                          {projects.demo} ↗
+                        </a>
+                      ) : (
+                        <Link className={`mono ${styles.projectLink}`} href={project.demo}>
+                          {projects.demo} →
+                        </Link>
+                      ))}
                   </div>
                 )}
               </Reveal>
@@ -131,7 +148,7 @@ export function Education() {
                         className={styles.eduLink}
                         href={item.url}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noreferrer noopener"
                       >
                         {copy.place}
                         <span className={styles.eduLinkMark} aria-hidden>
