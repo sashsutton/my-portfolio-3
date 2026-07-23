@@ -58,8 +58,7 @@
 }
 
 /* ------------------------------------------------------------------ sets */
-/* Three stacked media blocks (DJ set, live set, video), each with a small
-   amber label above it. */
+/* Two stacked media blocks (DJ set, video), each with a small amber label. */
 .set {
   margin-top: 34px;
 }
@@ -69,20 +68,6 @@
 .setLabel {
   margin-bottom: 12px;
   color: var(--amber-dim);
-}
-/* Radio set carries a station name beside its label. */
-.setHead {
-  display: flex;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.setHead .setLabel {
-  margin-bottom: 0;
-}
-.setStation {
-  color: var(--t4);
 }
 
 /* SoundCloud widget. The border + radius wrap it so the third-party player
@@ -95,35 +80,6 @@
 }
 .soundcloud iframe {
   display: block;
-}
-
-/* Self-hosted live set. */
-.audio {
-  width: 100%;
-}
-/* Placeholder shown until a file exists — hatched and labelled with the path,
-   the same pattern as the portrait slot, so it reads as a deliberate empty
-   slot rather than a broken player. */
-.audioEmpty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 96px;
-  border: 1px solid var(--line-2);
-  border-radius: 4px;
-  color: var(--t4);
-  background: repeating-linear-gradient(
-    -45deg,
-    transparent 0 9px,
-    rgba(236, 233, 226, 0.035) 9px 10px
-  );
-}
-.audioPath {
-  font-size: 9px;
-  color: var(--amber-dim);
-  opacity: 0.8;
 }
 
 /* Video — fixed 16:9 box so the layout reserves the right height before the

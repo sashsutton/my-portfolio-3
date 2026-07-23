@@ -102,6 +102,67 @@
   }
 }
 
+/* ------------------------------------------------------------ research -- */
+/* A single featured publication. Serif title, mono citation line above it, a
+   row of links below — reads like a paper entry rather than a project card. */
+.paper {
+  border-top: 1px solid var(--line);
+  padding-top: 26px;
+}
+.paperMeta {
+  color: var(--green-dim);
+  margin: 0 0 12px;
+}
+.paperTitle {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 400;
+  font-size: clamp(22px, 3vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  max-width: 30ch;
+}
+.paperBlurb {
+  color: var(--t2);
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.7;
+  max-width: 60ch;
+  margin: 0 0 22px;
+}
+.paperLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.paperLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid var(--line-2);
+  border-radius: 2px;
+  color: var(--t2);
+  transition: color 0.25s var(--ease), border-color 0.25s var(--ease),
+    background 0.25s var(--ease), transform 0.25s var(--ease);
+}
+.paperLink:hover {
+  color: var(--green);
+  border-color: var(--green-dim);
+  background: rgba(124, 255, 178, 0.07);
+  transform: translateY(-2px);
+}
+/* HAL is the canonical home of the paper, so it leads. */
+.paperLinkPrimary {
+  color: var(--bg);
+  background: var(--green);
+  border-color: var(--green);
+}
+.paperLinkPrimary:hover {
+  color: var(--bg);
+  background: #9dffc7;
+  border-color: #9dffc7;
+}
+
 /* ------------------------------------------------------------ projects -- */
 .projects {
   display: grid;

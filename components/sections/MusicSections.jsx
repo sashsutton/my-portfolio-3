@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useLang } from "@/components/providers/LanguageProvider";
-import { audioRef, useAppStore } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
 import { shared } from "@/lib/content";
 import Reveal from "./Reveal";
 import styles from "./music.module.css";
@@ -50,8 +50,7 @@ export function MusicHero() {
 export function Sets() {
   const { t } = useLang();
   const { sets } = t.music;
-  const setPlaying = useAppStore((s) => s.setPlaying);
-  const { soundcloud, youtubeId, youtubeStart, radioSet } = shared.media;
+  const { soundcloud, youtubeId, youtubeStart } = shared.media;
 
   // youtube-nocookie so an unopened embed sets no tracking cookies. start= keeps
   // the ?t=10s from the share link; rel=0 keeps "related" to this channel only.
@@ -79,37 +78,8 @@ export function Sets() {
           </div>
         </Reveal>
 
-        {/* Radio set — self-hosted (Amplitudes Radio). The frame is drawn either
-            way, so dropping a file in later cannot reflow the section. */}
+        {/* Video — YouTube */}
         <Reveal delay={0.06} className={styles.set}>
-          <div className={styles.setHead}>
-            <span className={`mono ${styles.setLabel}`}>{sets.radio}</span>
-            <span className={`mono ${styles.setStation}`}>{sets.radioStation}</span>
-          </div>
-          {radioSet ? (
-            // Registers itself so the floating deck can drive it. onPlay/onPause
-            // sync `playing`, which is what spins the vinyl — so the inline
-            // controls and the deck stay in lockstep whichever you press.
-            <audio
-              ref={(el) => (audioRef.current = el)}
-              className={styles.audio}
-              controls
-              preload="none"
-              src={radioSet}
-              onPlay={() => setPlaying(true)}
-              onPause={() => setPlaying(false)}
-              onEnded={() => setPlaying(false)}
-            />
-          ) : (
-            <div className={styles.audioEmpty} aria-hidden>
-              <span className="mono">{sets.radioPlaceholder}</span>
-              <span className={`mono ${styles.audioPath}`}>public/audio/amplitudes-radio.mp3</span>
-            </div>
-          )}
-        </Reveal>
-
-        {/* Live set — video, YouTube */}
-        <Reveal delay={0.12} className={styles.set}>
           <div className={`mono ${styles.setLabel}`}>{sets.video}</div>
           <div className={styles.video}>
             <iframe
@@ -208,16 +178,8 @@ export function Transport() {
   const playing = useAppStore((s) => s.playing);
   const toggle = useAppStore((s) => s.togglePlaying);
 
-  // If the radio set is loaded, the deck drives that <audio> — play/pause on it
-  // fires onPlay/onPause, which sets `playing` and spins the vinyl. With no file
-  // yet, there is no audio element, so the button just toggles the spin.
-  const onClick = () => {
-    const a = audioRef.current;
-    if (!a) return toggle();
-    if (a.paused) a.play();
-    else a.pause();
-  };
-
+  // Purely visual now — toggles the platter's constant spin. The sets above are
+  // all embeds, which carry their own audio.
   return (
     <div className={styles.transport}>
       <div className={styles.transportMeta}>
@@ -228,7 +190,7 @@ export function Transport() {
 
       <button
         className={styles.playBtn}
-        onClick={onClick}
+        onClick={toggle}
         aria-label={playing ? t.music.pause : t.music.play}
       >
         {playing ? (

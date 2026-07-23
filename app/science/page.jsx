@@ -8,6 +8,7 @@ import {
   Education,
   Focus,
   Projects,
+  Research,
   ScienceHero,
   ScienceOutro,
 } from "@/components/sections/ScienceSections";
@@ -32,6 +33,7 @@ export default function SciencePage() {
 
       <main>
         <ScienceHero />
+        <Research />
         <Projects />
         <Education />
         <Focus />
