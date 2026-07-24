@@ -122,12 +122,26 @@
 }
 .transportMeta {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 1px;
+  /* Track names get long ("VILASON X AMEDEO X VALORIN…"), so cap the pill and
+     let the title ellipsize rather than stretch across the screen. */
+  min-width: 0;
+  max-width: 320px;
+}
+.transportLabel {
+  color: var(--amber-dim);
+  font-size: 9px;
 }
 .transportTitle {
   color: var(--t2);
   font-size: 11px;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+@media (max-width: 560px) {
+  .transportMeta { max-width: 190px; }
 }
 .playBtn {
   display: inline-flex;
