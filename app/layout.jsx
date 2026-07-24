@@ -1,5 +1,6 @@
 import "./globals.css";
 import { IBM_Plex_Mono, IBM_Plex_Sans, Newsreader } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import SmoothScroll from "@/components/providers/SmoothScroll";
 
@@ -47,6 +48,8 @@ export default function RootLayout({ children }) {
           <div className="veil" aria-hidden />
           <div className="grain" aria-hidden />
         </LanguageProvider>
+        {/* Vercel Web Analytics — collects on the deployed site only. */}
+        <Analytics />
       </body>
     </html>
   );

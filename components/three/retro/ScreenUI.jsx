@@ -28,7 +28,7 @@ import styles from "./screen.module.css";
  * occupies a roughly fixed number of *device* pixels, so authoring at 640 wide
  * means every DOM pixel renders at ~0.58 device px and 15px type comes out at
  * ~8px — unreadable. Authoring at 380 instead makes it near 1:1. The trade is
- * that less text fits, hence the separate, shorter `bootCompact` copy.
+ * that less text fits, hence the separate, shorter `introCompact` copy.
  */
 const FULL = { w: 640, h: 480, df: 1.6 };
 const COMPACT = { w: 380, h: 285, df: (400 * 2.56) / 380 };
