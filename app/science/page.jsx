@@ -33,8 +33,8 @@ export default function SciencePage() {
 
       <main>
         <ScienceHero />
-        <Research />
         <Projects />
+        <Research />
         <Education />
         <Focus />
         <ScienceOutro />
