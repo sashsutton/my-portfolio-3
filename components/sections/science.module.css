@@ -151,16 +151,19 @@
   background: rgba(124, 255, 178, 0.07);
   transform: translateY(-2px);
 }
-/* HAL is the canonical home of the paper, so it leads. */
+/* HAL is the canonical home of the paper, so it leads — but as a green-tinted
+   fill, not a solid neon block. A saturated fill fights the two ghost buttons
+   next to it and the scanline veil striping across it reads as cheap; a low
+   tint keeps it clearly primary while staying in the same family. */
 .paperLinkPrimary {
-  color: var(--bg);
-  background: var(--green);
-  border-color: var(--green);
+  color: var(--green);
+  background: rgba(124, 255, 178, 0.12);
+  border-color: var(--green-dim);
 }
 .paperLinkPrimary:hover {
-  color: var(--bg);
-  background: #9dffc7;
-  border-color: #9dffc7;
+  color: var(--green);
+  background: rgba(124, 255, 178, 0.2);
+  border-color: var(--green);
 }
 
 /* ------------------------------------------------------------ projects -- */

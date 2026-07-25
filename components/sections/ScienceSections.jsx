@@ -116,14 +116,58 @@ export function Projects() {
 
 /* ----------------------------------------------------------------- research -- */
 export function Research() {
-  const { t} = useLang();
+  const { t } = useLang();
   const { research } = t.science;
 
   return (
     <section id="research" data-section className="section">
       <div className={styles.block}>
         <SectionHead title={research.title} />
-        <p className={styles.researchBody}>{research.body}</p>
+
+        {shared.research.publications.map((pub, i) => {
+          const copy = research.entries[pub.id];
+          return (
+            <Reveal key={pub.id} delay={i * 0.06} className={styles.paper}>
+              {/* The title is the paper's real French title and stays verbatim
+                  in both locales — it is a citation, not UI copy, so it is not
+                  translated. The label chrome around it is. */}
+              <h3 className={styles.paperTitle}>{copy.title}</h3>
+              <p className={`mono ${styles.paperMeta}`}>{copy.meta}</p>
+              <p className={styles.paperBlurb}>{copy.blurb}</p>
+
+              <div className={styles.paperLinks}>
+                <a
+                  className={`mono ${styles.paperLink} ${styles.paperLinkPrimary}`}
+                  href={pub.hal}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  {research.hal} ↗
+                </a>
+                {pub.scholar && (
+                  <a
+                    className={`mono ${styles.paperLink}`}
+                    href={pub.scholar}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {research.scholar} ↗
+                  </a>
+                )}
+                {pub.repo && (
+                  <a
+                    className={`mono ${styles.paperLink}`}
+                    href={pub.repo}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    {research.repo} ↗
+                  </a>
+                )}
+              </div>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );
