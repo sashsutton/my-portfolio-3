@@ -109,7 +109,6 @@ export function Work() {
 
             const body = (
               <>
-                <div className={`mono ${styles.lensTag}`}>{lens.tag}</div>
                 <h3 className={styles.lensTitle}>
                   {t.programs[lens.key].label}
                   {/* Only the lenses that lead somewhere get the arrow. */}

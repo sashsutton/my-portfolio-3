@@ -176,14 +176,11 @@
 .lens:hover {
   background: #0c0f0d;
 }
-.lensTag {
-  color: var(--t4);
-}
 .lensTitle {
   font-family: var(--font-serif), Georgia, serif;
   font-size: clamp(24px, 2.6vw, 34px);
   line-height: 1.1;
-  margin: 16px 0 12px;
+  margin: 0 0 12px;
   display: flex;
   align-items: center;
   gap: 10px;
