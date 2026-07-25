@@ -42,60 +42,6 @@ export function ScienceHero() {
   );
 }
 
-/* -------------------------------------------------------------- research -- */
-
-export function Research() {
-  const { t } = useLang();
-  const { research } = t.science;
-
-  return (
-    <section id="research" data-section className="section">
-      <div className={styles.block}>
-        <SectionHead title={research.title} />
-
-        {shared.research.publications.map((pub, i) => {
-          const copy = research.entries[pub.id];
-          return (
-            <Reveal key={pub.id} delay={i * 0.06} className={styles.paper}>
-              <p className={`mono ${styles.paperMeta}`}>{copy.meta}</p>
-              <h3 className={styles.paperTitle}>{copy.title}</h3>
-              <p className={styles.paperBlurb}>{copy.blurb}</p>
-              <div className={styles.paperLinks}>
-                <a
-                  className={`mono ${styles.paperLink} ${styles.paperLinkPrimary}`}
-                  href={pub.hal}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  {research.hal} ↗
-                </a>
-                <a
-                  className={`mono ${styles.paperLink}`}
-                  href={pub.scholar}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                >
-                  {research.scholar} ↗
-                </a>
-                {pub.repo && (
-                  <a
-                    className={`mono ${styles.paperLink}`}
-                    href={pub.repo}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {research.repo} ↗
-                  </a>
-                )}
-              </div>
-            </Reveal>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
 /* ------------------------------------------------------------- projects -- */
 
 export function Projects() {
@@ -168,6 +114,20 @@ export function Projects() {
   );
 }
 
+/* ----------------------------------------------------------------- research -- */
+export function Research() {
+  const { t} = useLang();
+  const { research } = t.science;
+
+  return (
+    <section id="research" data-section className="section">
+      <div className={styles.block}>
+        <SectionHead title={research.title} />
+        <p className={styles.researchBody}>{research.body}</p>
+      </div>
+    </section>
+  );
+}
 /* ------------------------------------------------------------ education -- */
 
 export function Education() {

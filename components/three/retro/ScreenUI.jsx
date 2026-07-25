@@ -31,7 +31,15 @@ import styles from "./screen.module.css";
  * that less text fits, hence the separate, shorter `introCompact` copy.
  */
 const FULL = { w: 640, h: 480, df: 1.6 };
-const COMPACT = { w: 380, h: 285, df: (400 * 2.56) / 380 };
+/**
+ * Deliberately inset within the 2.56 x 1.92 tube opening. At w:380 the box maps
+ * to the full opening and sits flush against the curved glass — on phones that
+ * pushes the corners and the bottom scroll hint onto the bezel, so the terminal
+ * reads as spilling *outside* the screen. We keep the full-size distanceFactor
+ * (so type stays ~1:1 with device pixels) and shrink the authoring box instead:
+ * that insets the whole terminal ~7% on every side without shrinking the text.
+ */
+const COMPACT = { w: 352, h: 264, df: (400 * 2.56) / 380 };
 
 export default function ScreenUI({ booted, position }) {
   const { t } = useLang();
