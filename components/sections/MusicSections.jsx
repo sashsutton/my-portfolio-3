@@ -63,17 +63,26 @@ export function Sets() {
   // the ?t=10s from the share link; rel=0 keeps "related" to this channel only.
   const youtube = `https://www.youtube-nocookie.com/embed/${youtubeId}?start=${youtubeStart}&rel=0`;
 
-  // Bind the SoundCloud Widget once both its API script and the iframe exist.
-  // The API can load after mount (lazyOnload), so poll briefly rather than
-  // assume window.SC is there on the first pass.
+  // Bind the SoundCloud widget to the platter. This has to survive two
+  // independent load orders: the API script and the iframe each finish on their
+  // own schedule. So we retry until both `window.SC` and the iframe exist, then
+  // wire the play/pause handlers *twice* — once immediately and once on the
+  // widget's READY event.
+  //
+  // Why twice: the iframe only starts pushing PLAY/PAUSE back to us once its
+  // READY handshake has completed. If the iframe is already ready when we bind,
+  // the immediate wiring works and READY won't fire again; if the iframe is
+  // still loading, the immediate binds land before it is listening and go
+  // nowhere, but the READY binding catches it. Duplicate binds are idempotent
+  // (each just sets the same flag), so covering both costs nothing.
   useEffect(() => {
-    let widget;
     let poll;
-    const bind = () => {
-      const SC = typeof window !== "undefined" ? window.SC : null;
-      if (!SC || !scFrame.current) return false;
-      widget = SC.Widget(scFrame.current);
-      widget.bind(SC.Widget.Events.PLAY, () => {
+    let cancelled = false;
+    let wired = false;
+
+    const wire = (widget) => {
+      const { Events } = window.SC.Widget;
+      widget.bind(Events.PLAY, () => {
         setPlaying(true);
         // Pull the current track's title so the deck can name what is playing.
         // Fires again on each track as the profile playlist advances.
@@ -81,22 +90,36 @@ export function Sets() {
           if (sound && sound.title) setTrackTitle(sound.title);
         });
       });
-      widget.bind(SC.Widget.Events.PAUSE, () => setPlaying(false));
-      widget.bind(SC.Widget.Events.FINISH, () => setPlaying(false));
+      widget.bind(Events.PAUSE, () => setPlaying(false));
+      widget.bind(Events.FINISH, () => setPlaying(false));
       scWidgetRef.current = widget;
+    };
+
+    const attach = () => {
+      const SC = typeof window !== "undefined" ? window.SC : null;
+      if (cancelled || wired || !SC || !scFrame.current) return wired;
+      wired = true;
+      const widget = SC.Widget(scFrame.current);
+      widget.bind(SC.Widget.Events.READY, () => !cancelled && wire(widget));
+      wire(widget);
       return true;
     };
-    if (!bind()) poll = setInterval(() => bind() && clearInterval(poll), 300);
+
+    if (!attach()) poll = setInterval(() => attach() && clearInterval(poll), 250);
     return () => {
+      cancelled = true;
       clearInterval(poll);
       scWidgetRef.current = null;
     };
-  }, [setPlaying]);
+  }, [setPlaying, setTrackTitle]);
 
   return (
     <section id="sets" data-section className="section">
-      {/* SoundCloud's widget controller. lazyOnload so it never blocks paint. */}
-      <Script src="https://w.soundcloud.com/player/api.js" strategy="lazyOnload" />
+      {/* SoundCloud's widget controller. afterInteractive (not lazyOnload) so the
+          deck is wired up reliably soon after hydration — the script is async and
+          still doesn't block paint. lazyOnload waits for window `load` + idle,
+          which on this WebGL page can be seconds, leaving the deck dead. */}
+      <Script src="https://w.soundcloud.com/player/api.js" strategy="afterInteractive" />
 
       <div className={sections.block}>
         <SectionHead title={sets.title} />
