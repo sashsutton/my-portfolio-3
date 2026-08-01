@@ -25,8 +25,15 @@ const KEYFRAMES = [
   { at: 1.0, pos: [0.0, 4.8, 17.0], look: [0, -1.9, 0] },
 ];
 
-/** Portrait frames the screen plane (z = +1.21), not the whole machine. */
-const FIT = { landscape: 5, portrait: 2.85, subjectZ: 1.21, baseZ: 7.4 };
+/**
+ * Portrait framing width. This has to clear the *shell* (3.34 wide), not just
+ * the screen (2.56): framing tight to the screen crops the beige sides off, so
+ * the tube looks like it is bursting out of the machine rather than mounted in
+ * it. 3.3 shows the whole computer — both side bezels and the rounded corners —
+ * with the screen clearly seated inside it. The cost is a slightly smaller
+ * on-screen terminal, which is why the copy has its own shorter `introCompact`.
+ */
+const FIT = { landscape: 5, portrait: 3.3, subjectZ: 1.21, baseZ: 7.4 };
 
 /**
  * Everything inside the hero Canvas except post-processing.
