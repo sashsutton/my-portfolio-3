@@ -144,26 +144,6 @@ export function Research() {
                 >
                   {research.hal} ↗
                 </a>
-                {pub.scholar && (
-                  <a
-                    className={`mono ${styles.paperLink}`}
-                    href={pub.scholar}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {research.scholar} ↗
-                  </a>
-                )}
-                {pub.repo && (
-                  <a
-                    className={`mono ${styles.paperLink}`}
-                    href={pub.repo}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    {research.repo} ↗
-                  </a>
-                )}
               </div>
             </Reveal>
           );
