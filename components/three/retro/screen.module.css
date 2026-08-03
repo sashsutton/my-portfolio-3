@@ -1,5 +1,5 @@
 /* The DOM that lives inside the CRT. Authored at a fixed pixel size (640x480
-   "VGA", or 380x285 on narrow viewports — see ScreenUI) and scaled into world
+   "VGA", or 352x264 on narrow viewports — see ScreenUI) and scaled into world
    space by drei's <Html transform>. Sizes here are authoring pixels, so they
    are fixed; the `.compact` block is the one responsive step. */
 
@@ -222,7 +222,7 @@
 }
 
 /* --------------------------------------------------------------- compact ---
-   Narrow viewports author the terminal at 380x285 instead of 640x480. Type
+   Narrow viewports author the terminal at 352x264 instead of 640x480. Type
    sizes stay roughly the same in authoring pixels — which is the point: the
    box shrinks around them, so they end up near 1:1 with device pixels. */
 .compact {

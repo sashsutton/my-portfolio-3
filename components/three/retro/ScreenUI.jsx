@@ -30,16 +30,33 @@ import styles from "./screen.module.css";
  * ~8px — unreadable. Authoring at 380 instead makes it near 1:1. The trade is
  * that less text fits, hence the separate, shorter `introCompact` copy.
  */
-const FULL = { w: 640, h: 480, df: 1.6 };
+/** World width of the tube opening — the plane this DOM is mapped onto. */
+const SCREEN_W = 2.56;
 /**
- * Deliberately inset within the 2.56 x 1.92 tube opening. At w:380 the box maps
- * to the full opening and sits flush against the curved glass — on phones that
- * pushes the corners and the bottom scroll hint onto the bezel, so the terminal
- * reads as spilling *outside* the screen. We keep the full-size distanceFactor
- * (so type stays ~1:1 with device pixels) and shrink the authoring box instead:
- * that insets the whole terminal ~7% on every side without shrinking the text.
+ * How much of that opening the terminal is allowed to fill.
+ *
+ * Mapping the box to the opening exactly (the obvious 640 @ df 1.6) leaves zero
+ * margin: the rounded corners and the bottom scroll hint sit flush against the
+ * curved glass, and since <Html transform> composites *above* the WebGL canvas
+ * it can never be occluded by the bezel — so the terminal reads as spilling
+ * outside the screen rather than living inside it. Holding it to ~93% keeps a
+ * visible strip of phosphor all the way round.
  */
-const COMPACT = { w: 352, h: 264, df: (400 * 2.56) / 380 };
+const FILL = 0.926;
+
+/** Desktop: authored at VGA, scaled down as a whole to sit inside the opening. */
+const FULL = { w: 640, h: 480, df: (400 * SCREEN_W * FILL) / 640 };
+/**
+ * Narrow viewports get the inset the other way round. The distanceFactor stays
+ * the one that maps a 380px box to the *full* opening — that is what keeps type
+ * near 1:1 with device pixels — and the authoring box is shrunk by FILL instead.
+ * Same inset, without shrinking the text on the screens that can least afford it.
+ */
+const COMPACT = {
+  w: Math.round(380 * FILL),
+  h: Math.round(285 * FILL),
+  df: (400 * SCREEN_W) / 380,
+};
 
 export default function ScreenUI({ booted, position }) {
   const { t } = useLang();
