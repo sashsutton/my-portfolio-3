@@ -39,13 +39,29 @@ body {
   padding: 0;
   background: var(--bg);
   color: var(--text);
+  /* Both are pinned to the screen width, and horizontal overflow is clipped on
+     the *root*, not just body. On iOS this is load-bearing: overflow-x on body
+     alone still lets the document (the initial containing block) grow wider than
+     the screen if anything overflows by a hair — and something does: the
+     `.block::before` contrast gradient bleeds `-8vw` past each side of the copy
+     column on purpose, which poke a few px past the screen edges on a phone. A
+     `position: fixed` element like the WebGL canvas anchors to that widened ICB,
+     so the centred computer renders centred-in-document — i.e. pushed off to one
+     side of the actual screen. Desktop responsive mode uses the visual viewport
+     directly and never reproduces it, which is why it only shows on a real phone.
+
+     `clip` on the root rather than `hidden`: clip contains the overflow without
+     turning <html> into a scroll container (hidden forces the other axis to
+     `auto`), so it can't interfere with Lenis' window scrolling. */
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
 }
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {
